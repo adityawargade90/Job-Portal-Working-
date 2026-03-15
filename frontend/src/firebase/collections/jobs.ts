@@ -15,6 +15,8 @@ export interface JobDocument {
   title: string;                         // required
   company: string;                       // required
   location: string;                      // default: ''
+  lat?: number;                          // optional – latitude of job location
+  lng?: number;                          // optional – longitude of job location
   jobType: string;                       // default: 'Full-time'
   skillsRequired: string[];              // default: []
   accessibilityTags: string[];           // default: []
@@ -44,7 +46,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Developer",
     company: "Tata Consultancy Services",
-    location: "India",
+    location: "Pune, Maharashtra, India",
+    lat: 18.5204, lng: 73.8567,
     jobType: "Full-time",
     skillsRequired: ["Java", "Python", "Software Development"],
     accessibilityTags: ["PwD Friendly", "Accessible Workplace"],
@@ -55,7 +58,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Engineer",
     company: "Infosys",
-    location: "India",
+    location: "Bengaluru, Karnataka, India",
+    lat: 12.9716, lng: 77.5946,
     jobType: "Full-time",
     skillsRequired: ["Java", "Cloud", "Programming"],
     accessibilityTags: ["PwD Hiring Program"],
@@ -66,7 +70,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "IT Support Engineer",
     company: "Wipro",
-    location: "India",
+    location: "Bengaluru, Karnataka, India",
+    lat: 12.9352, lng: 77.6245,
     jobType: "Full-time",
     skillsRequired: ["Networking", "Technical Support"],
     accessibilityTags: ["Accessible Office"],
@@ -77,7 +82,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Developer",
     company: "HCLTech",
-    location: "India",
+    location: "Noida, Uttar Pradesh, India",
+    lat: 28.5355, lng: 77.3910,
     jobType: "Full-time",
     skillsRequired: ["Java", "C++", "Backend Development"],
     accessibilityTags: ["PwD Friendly"],
@@ -88,7 +94,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Technical Analyst",
     company: "Tech Mahindra",
-    location: "India",
+    location: "Hyderabad, Telangana, India",
+    lat: 17.3850, lng: 78.4867,
     jobType: "Full-time",
     skillsRequired: ["Technical Support", "Networking"],
     accessibilityTags: ["PwD Hiring"],
@@ -99,7 +106,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Engineer",
     company: "Cognizant",
-    location: "India",
+    location: "Chennai, Tamil Nadu, India",
+    lat: 13.0827, lng: 80.2707,
     jobType: "Full-time",
     skillsRequired: ["Java", "SQL", "Programming"],
     accessibilityTags: ["Inclusive Hiring"],
@@ -110,7 +118,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Cloud Engineer",
     company: "Accenture",
-    location: "India",
+    location: "Mumbai, Maharashtra, India",
+    lat: 19.0760, lng: 72.8777,
     jobType: "Full-time",
     skillsRequired: ["Cloud", "AWS", "DevOps"],
     accessibilityTags: ["PwD Friendly"],
@@ -121,7 +130,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Data Analyst",
     company: "Capgemini",
-    location: "India",
+    location: "Kolkata, West Bengal, India",
+    lat: 22.5726, lng: 88.3639,
     jobType: "Full-time",
     skillsRequired: ["SQL", "Excel", "Data Analysis"],
     accessibilityTags: ["Accessible Workplace"],
@@ -132,7 +142,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Tester",
     company: "IBM India",
-    location: "India",
+    location: "Bengaluru, Karnataka, India",
+    lat: 12.9791, lng: 77.5913,
     jobType: "Full-time",
     skillsRequired: ["Testing", "Automation", "QA"],
     accessibilityTags: ["PwD Friendly"],
@@ -143,7 +154,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "AI Engineer",
     company: "Microsoft India",
-    location: "India",
+    location: "Hyderabad, Telangana, India",
+    lat: 17.4474, lng: 78.3762,
     jobType: "Full-time",
     skillsRequired: ["AI", "Machine Learning", "Python"],
     accessibilityTags: ["Accessible Workplace"],
@@ -154,7 +166,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Developer",
     company: "Google India",
-    location: "India",
+    location: "Bengaluru, Karnataka, India",
+    lat: 12.9783, lng: 77.6408,
     jobType: "Full-time",
     skillsRequired: ["Algorithms", "Programming"],
     accessibilityTags: ["PwD Friendly"],
@@ -165,7 +178,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Cloud Support Associate",
     company: "Amazon",
-    location: "India",
+    location: "Hyderabad, Telangana, India",
+    lat: 17.4292, lng: 78.3421,
     jobType: "Full-time",
     skillsRequired: ["Cloud", "Linux", "Networking"],
     accessibilityTags: ["Accessible Workplace"],
@@ -176,7 +190,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Engineer",
     company: "Oracle",
-    location: "India",
+    location: "Bengaluru, Karnataka, India",
+    lat: 12.9592, lng: 77.6974,
     jobType: "Full-time",
     skillsRequired: ["Java", "Database"],
     accessibilityTags: ["PwD Friendly"],
@@ -187,7 +202,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Engineer",
     company: "SAP",
-    location: "India",
+    location: "Bengaluru, Karnataka, India",
+    lat: 12.9716, lng: 77.5946,
     jobType: "Full-time",
     skillsRequired: ["SAP", "Programming"],
     accessibilityTags: ["Autism at Work Program"],
@@ -198,7 +214,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Software Developer",
     company: "Dell Technologies",
-    location: "India",
+    location: "Hyderabad, Telangana, India",
+    lat: 17.4126, lng: 78.4071,
     jobType: "Full-time",
     skillsRequired: ["Programming", "Cloud"],
     accessibilityTags: ["PwD Friendly"],
@@ -209,7 +226,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "IT Analyst",
     company: "HP",
-    location: "India",
+    location: "Bengaluru, Karnataka, India",
+    lat: 12.9353, lng: 77.6141,
     jobType: "Full-time",
     skillsRequired: ["IT Support", "Networking"],
     accessibilityTags: ["Accessible Workplace"],
@@ -220,7 +238,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Customer Support Executive",
     company: "Concentrix",
-    location: "India",
+    location: "Gurugram, Haryana, India",
+    lat: 28.4595, lng: 77.0266,
     jobType: "Full-time",
     skillsRequired: ["Communication", "Customer Support"],
     accessibilityTags: ["PwD Friendly"],
@@ -231,7 +250,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Customer Support Associate",
     company: "Teleperformance",
-    location: "India",
+    location: "Mumbai, Maharashtra, India",
+    lat: 19.0330, lng: 73.0297,
     jobType: "Full-time",
     skillsRequired: ["Customer Service", "Communication"],
     accessibilityTags: ["Accessible Workplace"],
@@ -242,7 +262,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Technical Support",
     company: "Genpact",
-    location: "India",
+    location: "Noida, Uttar Pradesh, India",
+    lat: 28.5355, lng: 77.3910,
     jobType: "Full-time",
     skillsRequired: ["Technical Support"],
     accessibilityTags: ["PwD Hiring"],
@@ -253,7 +274,8 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
   {
     title: "Business Analyst",
     company: "Deloitte",
-    location: "India",
+    location: "Mumbai, Maharashtra, India",
+    lat: 19.0760, lng: 72.8777,
     jobType: "Full-time",
     skillsRequired: ["Analytics", "Consulting"],
     accessibilityTags: ["PwD Friendly"],

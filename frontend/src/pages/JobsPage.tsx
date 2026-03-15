@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Briefcase, MapPin, Bookmark, Share2, Search, Loader2, Sparkles } from "lucide-react";
+import { Briefcase, MapPin, Bookmark, Share2, Search, Loader2, Sparkles, Navigation } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGeolocation } from "@/hooks/use-geolocation";
+import { calculateDistance, formatDistance, getDirectionsUrl } from "@/lib/distance";
 import DashboardLayout from "@/components/DashboardLayout";
 import PageHeader from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,6 +30,13 @@ const JobsPage = () => {
   const [aiMatches, setAiMatches] = useState<Record<string, AIMatch>>({});
   const [aiLoading, setAiLoading] = useState(false);
   const { profile } = useAuth();
+  const geo = useGeolocation();
+
+  useEffect(() => {
+    if (geo.error) {
+      toast.warning(geo.error, { duration: 5000 });
+    }
+  }, [geo.error]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -108,6 +117,21 @@ const JobsPage = () => {
     return Math.round((matched.length / required.length) * 100);
   };
 
+  const getJobDistance = (job: any): string | null => {
+    if (!geo.coords || job.lat == null || job.lng == null) return null;
+    const km = calculateDistance(geo.coords.latitude, geo.coords.longitude, job.lat, job.lng);
+    return formatDistance(km);
+  };
+
+  const handleGetDirections = (job: any) => {
+    if (!geo.coords) {
+      toast.error("Your location is not available. Please allow location access.");
+      return;
+    }
+    const url = getDirectionsUrl(geo.coords.latitude, geo.coords.longitude, job.location);
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const filtered = jobs
     .filter(j => j.title.toLowerCase().includes(search.toLowerCase()) || j.company.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => getMatchScore(b) - getMatchScore(a));
@@ -170,6 +194,14 @@ const JobsPage = () => {
                       <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                         {job.company} • <MapPin className="h-3 w-3" /> {job.location}
                       </p>
+                      {(() => {
+                        const dist = getJobDistance(job);
+                        return dist ? (
+                          <p className="text-xs text-primary flex items-center gap-1 mt-0.5">
+                            <Navigation className="h-3 w-3" /> {dist}
+                          </p>
+                        ) : null;
+                      })()}
                       <p className="text-xs text-muted-foreground mt-1">{job.jobType} • {job.salaryRange}</p>
 
                       {aiMatch?.reasons?.length > 0 && (
@@ -192,6 +224,15 @@ const JobsPage = () => {
                       <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{job.description}</p>
                       <div className="flex gap-2 mt-4">
                         <Button className="flex-1 bg-primary text-primary-foreground">Apply Now</Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1 text-xs"
+                          onClick={() => handleGetDirections(job)}
+                          title="Get directions to job location"
+                        >
+                          <Navigation className="h-3.5 w-3.5" /> Get Directions
+                        </Button>
                         <Button variant="outline" size="icon" onClick={() => toast.success("Job saved!")}>
                           <Bookmark className="h-4 w-4" />
                         </Button>
