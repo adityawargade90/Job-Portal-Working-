@@ -23,6 +23,9 @@ export interface JobDocument {
   description: string;                   // default: ''
   salaryRange: string;                   // default: ''
   isActive: boolean;                     // default: true
+  jobStatus: "active" | "inactive";      // explicit admin-set status
+  registrationStartDate?: string;        // ISO date YYYY-MM-DD
+  registrationEndDate?: string;          // ISO date YYYY-MM-DD
   createdAt: any;                        // serverTimestamp()
 }
 
@@ -54,6 +57,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "TCS inclusive hiring program for persons with disabilities.",
     salaryRange: "4-10 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-05-31",
   },
   {
     title: "Software Engineer",
@@ -66,6 +72,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Infosys inclusive workforce initiative for PwD.",
     salaryRange: "4-9 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-10",
+    registrationEndDate: "2026-06-15",
   },
   {
     title: "IT Support Engineer",
@@ -78,6 +87,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Wipro disability inclusion hiring program.",
     salaryRange: "3-8 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-04-30",
   },
   {
     title: "Software Developer",
@@ -90,6 +102,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Inclusive hiring initiative for PwD candidates.",
     salaryRange: "4-9 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-05",
+    registrationEndDate: "2026-05-15",
   },
   {
     title: "Technical Analyst",
@@ -102,8 +117,12 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Tech Mahindra accessibility and inclusion program.",
     salaryRange: "3-7 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-06-30",
   },
   {
+    // Closing soon — ends 2026-03-18 (3 days from 2026-03-15)
     title: "Software Engineer",
     company: "Cognizant",
     location: "Chennai, Tamil Nadu, India",
@@ -114,6 +133,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Cognizant diversity hiring program.",
     salaryRange: "4-10 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-02-01",
+    registrationEndDate: "2026-03-18",
   },
   {
     title: "Cloud Engineer",
@@ -126,6 +148,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Accenture disability inclusion hiring program.",
     salaryRange: "6-12 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-05-31",
   },
   {
     title: "Data Analyst",
@@ -138,6 +163,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Capgemini inclusive hiring program.",
     salaryRange: "4-8 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-10",
+    registrationEndDate: "2026-04-15",
   },
   {
     title: "Software Tester",
@@ -150,6 +178,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "IBM inclusive workforce program.",
     salaryRange: "5-12 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-06-01",
   },
   {
     title: "AI Engineer",
@@ -162,8 +193,12 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Microsoft disability hiring program.",
     salaryRange: "10-20 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-05-31",
   },
   {
+    // Closing soon — ends 2026-03-20 (5 days from 2026-03-15)
     title: "Software Developer",
     company: "Google India",
     location: "Bengaluru, Karnataka, India",
@@ -174,6 +209,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Google inclusive hiring initiative.",
     salaryRange: "15-35 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-02-15",
+    registrationEndDate: "2026-03-20",
   },
   {
     title: "Cloud Support Associate",
@@ -186,6 +224,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Amazon inclusive hiring program.",
     salaryRange: "5-12 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-05",
+    registrationEndDate: "2026-05-15",
   },
   {
     title: "Software Engineer",
@@ -198,6 +239,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Oracle diversity hiring initiative.",
     salaryRange: "6-14 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-10",
+    registrationEndDate: "2026-06-15",
   },
   {
     title: "Software Engineer",
@@ -210,6 +254,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "SAP Autism at Work hiring initiative.",
     salaryRange: "8-15 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-04-30",
   },
   {
     title: "Software Developer",
@@ -222,6 +269,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Dell inclusive hiring program.",
     salaryRange: "6-12 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-05-31",
   },
   {
     title: "IT Analyst",
@@ -234,8 +284,12 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "HP disability inclusion hiring.",
     salaryRange: "5-10 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-06-30",
   },
   {
+    // Registration closed — ended 2026-02-28 (before 2026-03-15)
     title: "Customer Support Executive",
     company: "Concentrix",
     location: "Gurugram, Haryana, India",
@@ -246,8 +300,12 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "BPO inclusive hiring initiative.",
     salaryRange: "2-5 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-01-01",
+    registrationEndDate: "2026-02-28",
   },
   {
+    // Closing soon — ends 2026-03-17 (2 days from 2026-03-15)
     title: "Customer Support Associate",
     company: "Teleperformance",
     location: "Mumbai, Maharashtra, India",
@@ -258,6 +316,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Inclusive hiring program.",
     salaryRange: "2-5 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-02-15",
+    registrationEndDate: "2026-03-17",
   },
   {
     title: "Technical Support",
@@ -270,8 +331,12 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Genpact inclusive hiring initiative.",
     salaryRange: "3-6 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-03-01",
+    registrationEndDate: "2026-05-31",
   },
   {
+    // Registration closed — ended 2026-02-15 (before 2026-03-15)
     title: "Business Analyst",
     company: "Deloitte",
     location: "Mumbai, Maharashtra, India",
@@ -282,6 +347,9 @@ export const pwdJobs: Omit<JobDocument, "createdAt">[] = [
     description: "Deloitte diversity and inclusion hiring.",
     salaryRange: "6-15 LPA",
     isActive: true,
+    jobStatus: "active",
+    registrationStartDate: "2026-01-10",
+    registrationEndDate: "2026-02-15",
   },
 ];
 

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Briefcase, MapPin, Bookmark, Share2, Search, Loader2, Sparkles, Navigation } from "lucide-react";
+import { Briefcase, MapPin, Bookmark, Share2, Search, Loader2, Sparkles, Navigation, Calendar, Clock } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { calculateDistance, formatDistance, getDirectionsUrl } from "@/lib/distance";
+import { getEffectiveJobStatus, isClosingSoon, formatRegistrationPeriod, getRegistrationStatus } from "@/lib/jobStatus";
 import DashboardLayout from "@/components/DashboardLayout";
 import PageHeader from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -175,20 +176,44 @@ const JobsPage = () => {
             {filtered.map((job, i) => {
               const match = getMatchScore(job);
               const aiMatch = aiMatches[job.id];
+              const effectiveStatus = getEffectiveJobStatus(job.jobStatus, job.registrationEndDate);
+              const regStatus = getRegistrationStatus(job.registrationStartDate, job.registrationEndDate);
+              const closingSoon = isClosingSoon(job.registrationEndDate);
+              const regPeriod = formatRegistrationPeriod(job.registrationStartDate, job.registrationEndDate);
+              const isClosed = effectiveStatus === "closed" || effectiveStatus === "inactive";
               return (
                 <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <Card className="border border-border hover:shadow-lg transition-shadow">
+                  <Card className={`border transition-shadow ${isClosed ? "border-border opacity-75" : closingSoon ? "border-warning/50 hover:shadow-lg" : "border-border hover:shadow-lg"}`}>
                     <CardContent className="p-5">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent">
                           <Briefcase className="h-5 w-5" />
                         </div>
-                        {match > 0 && (
-                          <Badge className={`${match >= 80 ? "bg-success/10 text-success border-success/20" : match >= 50 ? "bg-match/10 text-match border-match/20" : "bg-muted text-muted-foreground"}`}>
-                            {aiMatch && <Sparkles className="h-3 w-3 mr-1 inline" />}
-                            {match}% MATCH
-                          </Badge>
-                        )}
+                        <div className="flex items-center gap-2 flex-wrap justify-end">
+                          {/* Job status badge */}
+                          {effectiveStatus === "active" && (
+                            <Badge className="bg-success/10 text-success border-success/20 text-xs">Active</Badge>
+                          )}
+                          {effectiveStatus === "closed" && (
+                            <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-xs">Registration Closed</Badge>
+                          )}
+                          {effectiveStatus === "inactive" && (
+                            <Badge className="bg-muted text-muted-foreground border-muted text-xs">Inactive</Badge>
+                          )}
+                          {/* Closing soon badge */}
+                          {effectiveStatus === "active" && closingSoon && (
+                            <Badge className="bg-warning/10 text-warning border-warning/20 text-xs flex items-center gap-1">
+                              <Clock className="h-3 w-3" /> Closing Soon
+                            </Badge>
+                          )}
+                          {/* AI match score */}
+                          {match > 0 && (
+                            <Badge className={`${match >= 80 ? "bg-success/10 text-success border-success/20" : match >= 50 ? "bg-match/10 text-match border-match/20" : "bg-muted text-muted-foreground"}`}>
+                              {aiMatch && <Sparkles className="h-3 w-3 mr-1 inline" />}
+                              {match}% MATCH
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                       <h3 className="text-base font-bold text-foreground">{job.title}</h3>
                       <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
@@ -203,6 +228,15 @@ const JobsPage = () => {
                         ) : null;
                       })()}
                       <p className="text-xs text-muted-foreground mt-1">{job.jobType} • {job.salaryRange}</p>
+
+                      {/* Registration period */}
+                      {regPeriod && (
+                        <p className={`text-xs flex items-center gap-1 mt-1.5 ${regStatus === "closed" ? "text-destructive" : closingSoon ? "text-warning font-medium" : "text-muted-foreground"}`}>
+                          <Calendar className="h-3 w-3 shrink-0" />
+                          Registration: {regPeriod}
+                          {regStatus === "closed" && " · Closed"}
+                        </p>
+                      )}
 
                       {aiMatch?.reasons?.length > 0 && (
                         <p className="text-xs text-accent mt-2 italic">AI: {aiMatch.reasons[0]}</p>
@@ -223,7 +257,13 @@ const JobsPage = () => {
                       </div>
                       <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{job.description}</p>
                       <div className="flex gap-2 mt-4">
-                        <Button className="flex-1 bg-primary text-primary-foreground">Apply Now</Button>
+                        <Button
+                          className="flex-1 bg-primary text-primary-foreground disabled:opacity-50"
+                          disabled={isClosed}
+                          title={isClosed ? "Registration is closed for this job" : undefined}
+                        >
+                          {isClosed ? "Registration Closed" : "Apply Now"}
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
