@@ -6,13 +6,82 @@ const router = express.Router();
 const NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1";
 const NVIDIA_MODEL = "meta/llama-4-maverick-17b-128e-instruct";
 
+/** Types that require a structured JSON response from the model. */
+const JSON_TYPES = new Set(["skill-gap", "smart-recommendations", "job-match", "scheme-check", "resume"]);
+
+/**
+ * Extract the first valid JSON object or array from a string.
+ * Handles cases where the model wraps its output in markdown code fences
+ * (```json … ```) despite being asked not to.
+ */
+function extractJSON(raw) {
+  // Strip markdown code fences if present
+  const fenceMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const candidate = fenceMatch ? fenceMatch[1].trim() : raw.trim();
+
+  // Find the first '{' or '[' and the matching closing bracket
+  const start = candidate.search(/[\[{]/);
+  if (start === -1) return candidate; // Return as-is; JSON.parse will fail with a clear message
+
+  // Walk forward to find the matching close bracket
+  const open = candidate[start];
+  const close = open === "{" ? "}" : "]";
+  let depth = 0;
+  let end = -1;
+  for (let i = start; i < candidate.length; i++) {
+    if (candidate[i] === open) depth++;
+    else if (candidate[i] === close) {
+      depth--;
+      if (depth === 0) { end = i; break; }
+    }
+  }
+  return end !== -1 ? candidate.slice(start, end + 1) : candidate.slice(start);
+}
+
+/**
+ * Collect all SSE `data:` chunks from an NVIDIA stream into a single string.
+ */
+async function collectStream(body) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let full = "";
+  let textBuffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    textBuffer += decoder.decode(value, { stream: true });
+    let idx;
+    while ((idx = textBuffer.indexOf("\n")) !== -1) {
+      let line = textBuffer.slice(0, idx);
+      textBuffer = textBuffer.slice(idx + 1);
+      if (line.endsWith("\r")) line = line.slice(0, -1);
+      if (!line.startsWith("data: ")) continue;
+      const json = line.slice(6).trim();
+      if (json === "[DONE]") break;
+      try {
+        const p = JSON.parse(json);
+        const c = p.choices?.[0]?.delta?.content;
+        if (c) full += c;
+      } catch { /* skip malformed SSE line */ }
+    }
+  }
+  return full;
+}
+
 /**
  * POST /ai-assistant
  *
  * Accepts { messages, type, userProfile } and streams an SSE response from
  * the NVIDIA NIM API (meta/llama-4-maverick-17b-128e-instruct) using the OpenAI-compatible
- * endpoint.  Because the NIM API emits standard OpenAI SSE deltas, the
- * response is piped straight through — no transformation required.
+ * endpoint.
+ *
+ * For general chat the response is piped straight through as standard SSE.
+ * For structured JSON types (skill-gap, smart-recommendations, job-match,
+ * scheme-check, resume) the stream is collected, any markdown fences are
+ * stripped, and the clean JSON is emitted as a single SSE event so that
+ * clients can always do a simple `JSON.parse(full)` without worrying about
+ * model formatting quirks.
  *
  * Supported `type` values:
  *   "skill-gap"             – returns JSON skill-gap analysis
@@ -20,19 +89,19 @@ const NVIDIA_MODEL = "meta/llama-4-maverick-17b-128e-instruct";
  *   "job-match"             – returns JSON job match scores
  *   "scheme-check"          – returns JSON scheme eligibility
  *   "resume"                – returns JSON resume / profile feedback
- *   (anything else)         – general conversational assistant
+ *   (anything else)         – general conversational assistant (streamed)
  */
 router.post("/", async (req, res) => {
   const { messages, type, userProfile } = req.body;
 
   const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
   if (!NVIDIA_API_KEY) {
-    return res.status(500).json({ error: "NVIDIA_API_KEY is not configured" });
+    return res.status(500).json({ error: "NVIDIA_API_KEY is not configured. Add it to backend/.env (see backend/.env.example)." });
   }
 
   // Build system prompt based on request type
   let systemPrompt = `You are the DivyangConnectAI AI Assistant — a helpful, empathetic, and knowledgeable guide for persons with disabilities (PWD) in India.
-
+  
 Your role:
 - Help users find suitable jobs, government schemes, courses, and services
 - Provide career guidance and skill improvement suggestions
@@ -149,18 +218,31 @@ Be encouraging, specific, and disability-inclusive in your feedback. User Profil
       return res.status(500).json({ error: "AI service error" });
     }
 
-    // The NIM API already emits standard OpenAI SSE — pipe directly to client.
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
-    const reader = aiResponse.body.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      res.write(value);
+    if (JSON_TYPES.has(type)) {
+      // For structured JSON types: collect, clean, re-emit as a single SSE
+      // event so clients never need to worry about markdown code fences.
+      const raw = await collectStream(aiResponse.body);
+      const clean = extractJSON(raw);
+      // Emit as a standard OpenAI SSE delta so the existing client-side
+      // streaming parser keeps working without any changes.
+      const delta = { choices: [{ delta: { content: clean }, finish_reason: "stop" }] };
+      res.write(`data: ${JSON.stringify(delta)}\n\n`);
+      res.write("data: [DONE]\n\n");
+      res.end();
+    } else {
+      // For general chat: pipe the NIM stream directly to the client.
+      const reader = aiResponse.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(value);
+      }
+      res.end();
     }
-    res.end();
   } catch (err) {
     console.error("Error in /ai-assistant:", err);
     res
