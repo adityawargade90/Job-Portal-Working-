@@ -7,7 +7,7 @@ A smart, AI-powered portal for **Persons with Disabilities (PWD) in India** — 
 ## 📁our Project Structure
 
 The project is split into two independent parts:
-
+abc
 ```
 Job-Portal/
 ├── frontend/               ← React + Vite app (the UI)
