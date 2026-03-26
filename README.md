@@ -4,7 +4,7 @@ A smart, AI-powered portal for **Persons with Disabilities (PWD) in India** — 
 
 ---
 
-## 📁 Project Structure
+## 📁our Project Structure
 
 The project is split into two independent parts:
 
