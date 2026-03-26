@@ -40,7 +40,7 @@ Job-Portal/
 
 ---
 
-## 🚀 Tech Stack
+## 🚀 Our Project Tech Stack
 
 | Part | Technology |
 |---|---|
