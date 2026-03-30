@@ -47,7 +47,7 @@ Job-Portal/
 | **Frontend** | React 18, TypeScript, Vite, shadcn-ui, Tailwind CSS, Framer Motion |
 | **Database / Auth** | Firebase (Firestore + Authentication) |
 | **Backend** | Node.js 18+, Express.js |
-| **AI** | Express route → NVIDIA NIM API (google/gemma-3n-e4b-it) |
+| **AI** | Express route → NVIDIA NIM API (meta/llama-4-maverick-17b-128e-instruct) |
 | Routing | React Router v6 |
 | State | TanStack Query v5 |
 | Testing | Vitest, Testing Library |
